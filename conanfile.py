@@ -1,13 +1,16 @@
-from nxtools import NxConanFile
-from conans import AutoToolsBuildEnvironment, tools
+from conans import ConanFile,AutoToolsBuildEnvironment, tools
 
-class GperfToolsConan(NxConanFile):
+class GperfToolsConan(ConanFile):
     name = "gperftools"
     description = "The fastest malloc we have seen."
-    version = "2.5"
-    options = {"shared":[True, False], "cpuprof":[True, False], "heapprof":[True, False], "heapchecker":[True, False]}
+    version = "2.7"
+    options = { "shared":[True, False], 
+                "cpuprof":[True, False], 
+                "heapprof":[True, False], 
+                "heapchecker":[True, False]
+                }
     default_options = "shared=False", "cpuprof=False", "heapprof=False", "heapchecker=False"
-    url = "https://github.com/hoxnox/conan-gperftools"
+    url = "https://github.com/gperftools/gperftools"
     license = "https://github.com/gperftools/gperftools/blob/master/COPYING"
 
     def requirements(self):
@@ -15,15 +18,13 @@ class GperfToolsConan(NxConanFile):
             self.requires("libunwind/1.2@hoxnox/stable")
 
     def do_source(self):
-        self.retrieve("6fa2748f1acdf44d750253e160cf6e2e72571329b42e563b455bde09e9e85173",
-            [
-                'vendor://google/gperftools/gperftools-{version}.tar.gz'.format(version=self.version),
-                'https://github.com/gperftools/gperftools/releases/download/gperftools-{version}/gperftools-{version}.tar.gz'.format(version=self.version)
-            ], "gperftools-{v}.tar.gz".format(v = self.version))
+         zip_name = "gperftools-%s.zip" % self.version 
+
+         download( "https://github.com/gperftools/gperftools/releases/download/gperftools-%s/%s" %(self.version,zip_name))
+         unzip(zip_name)
 
     def do_build(self):
         build_dir = "{staging_dir}/src".format(staging_dir=self.staging_dir)
-        tools.untargz("gperftools-{v}.tar.gz".format(v=self.version), build_dir)
         env_build = AutoToolsBuildEnvironment(self)
         
         with tools.environment_append(env_build.vars):
