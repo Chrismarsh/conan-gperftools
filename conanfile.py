@@ -9,7 +9,7 @@ class GperfToolsConan(ConanFile):
                 "heapprof":[True, False], 
                 "heapchecker":[True, False]
                 }
-    default_options = "shared=False", "cpuprof=False", "heapprof=False", "heapchecker=False"
+    default_options = "shared=True", "cpuprof=False", "heapprof=False", "heapchecker=False"
     url = "https://github.com/gperftools/gperftools"
     license = "https://github.com/gperftools/gperftools/blob/master/COPYING"
 
