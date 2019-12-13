@@ -15,7 +15,7 @@ class GperfToolsConan(ConanFile):
 
     def requirements(self):
         if self.options.cpuprof or self.options.heapprof or self.options.heapchecker:
-            self.requires("libunwind/1.2@bincrafters/stable")
+            self.requires("libunwind/1.3.1@bincrafters/stable")
 
     def do_source(self):
          zip_name = "gperftools-%s.zip" % self.version 
