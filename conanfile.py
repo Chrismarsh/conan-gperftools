@@ -1,4 +1,6 @@
-from conans import ConanFile,AutoToolsBuildEnvironment, tools
+from conans import ConanFile,AutoToolsBuildEnvironment,tools
+from conans.tools import download, unzip
+
 
 class GperfToolsConan(ConanFile):
     name = "gperftools"
@@ -12,38 +14,57 @@ class GperfToolsConan(ConanFile):
     default_options = "shared=True", "cpuprof=False", "heapprof=False", "heapchecker=False"
     url = "https://github.com/gperftools/gperftools"
     license = "https://github.com/gperftools/gperftools/blob/master/COPYING"
-
+    settings = "os", "arch", "compiler", "build_type"
     def requirements(self):
+
+        if self.settings.os == 'Macos':
+            self.options.cpuprof = self.options.heapprof = self.options.heapchecker = False
+            print("!!!!!    libunwind is not supported on MacOS, disabling all associated functionality.    !!!!!")
+
         if self.options.cpuprof or self.options.heapprof or self.options.heapchecker:
             self.requires("libunwind/1.3.1@bincrafters/stable")
 
-    def do_source(self):
+    def source(self):
          zip_name = "gperftools-%s.zip" % self.version 
 
-         download( "https://github.com/gperftools/gperftools/releases/download/gperftools-%s/%s" %(self.version,zip_name))
+         download( "https://github.com/gperftools/gperftools/releases/download/gperftools-%s/%s" %(self.version,zip_name),zip_name)
          unzip(zip_name)
 
-    def do_build(self):
-        build_dir = "{staging_dir}/src".format(staging_dir=self.staging_dir)
-        env_build = AutoToolsBuildEnvironment(self)
-        
-        with tools.environment_append(env_build.vars):
-            self.run("cd {build_dir}/gperftools-{v} && ./configure --prefix=\"{staging}\" {is_minimal}"
-                     " {shared} {cpuprof} {heapprof} {heapchecker}".format(
-                         v = self.version,
-                         build_dir=build_dir,
-                         staging=self.staging_dir,
-                         is_minimal="" if self.options.cpuprof or self.options.heapprof or self.options.heapchecker else "--enable-minimal",
-                         shared="--enable-shared --disable-static" if self.options.shared else "--enable-static --disable-shared",
-                         cpuprof="--enable-cpu-profiler" if self.options.cpuprof else "--disable-cpu-profiler",
-                         heapprof="--enable-heap-profiler" if self.options.heapprof else "--disable-heap-profiler",
-                         heapchecker="--enable-heap-checker" if self.options.heapchecker else "--disable-heap-checker"))
-            self.run("cd {build_dir}/gperftools-{v} && make install".format(v = self.version, build_dir = build_dir))
+         self.run("chmod +x ./%s/configure" % ("gperftools-%s" % self.version))
+         self.run("chmod +x ./%s/install-sh" % ("gperftools-%s" % self.version))
 
-    def do_package_info(self):
+    def build(self):
+        with tools.chdir("gperftools-2.7"):
+            env_build = AutoToolsBuildEnvironment(self)
+            env_build.configure( 
+                                 args = [ "" if self.options.cpuprof or self.options.heapprof or self.options.heapchecker else "--enable-minimal",
+                                         "--enable-shared" if self.options.shared else "--disable-shared",
+                                         "--enable-static" if not self.options.shared else "-disable-static",
+                                         "--enable-cpu-profiler" if self.options.cpuprof else "--disable-cpu-profiler",
+                                         "--enable-heap-profiler" if self.options.heapprof else "--disable-heap-profiler",
+                                         "enable-heap-checker" if self.options.heapchecker else "--disable-heap-checker" ])
+            env_build.make()
+    
+
+    def package_info(self):
         if self.options.cpuprof or self.options.heapprof or self.options.heapchecker:
             self.cpp_info.libs = ["tcmalloc"]
         else:
             self.cpp_info.libs = ["tcmalloc_minimal"]
+
+
+    def package(self):
+        with tools.chdir("gperftools-2.7"):
+            env_build = AutoToolsBuildEnvironment(self)
+            env_build.install()
+
+        # self.copy(pattern="*", dst="include", src="include")
+
+        # self.copy(pattern="*.so", dst="lib", src=out_lib_dir, keep_path=False, symlinks=True)
+        # self.copy(pattern="*.so.*", dst="lib", src=out_lib_dir, keep_path=False, symlinks=True)
+        # self.copy(pattern="*.dylib*", dst="lib", src=out_lib_dir, keep_path=False)
+        # self.copy(pattern="*.lib", dst="lib", src=out_lib_dir, keep_path=False)
+        # self.copy(pattern="*.dll", dst="bin", src=out_lib_dir, keep_path=False)
+
 
 
