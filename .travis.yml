@@ -1,6 +1,6 @@
 env:
    global:
-      - CONAN_REFERENCE: "gperftools/2.7.0"
+      - CONAN_REFERENCE: "gperftools/2.7"
       - CONAN_USERNAME: "CHM"
       - CONAN_LOGIN_USERNAME: "chrismarsh"
       - CONAN_CHANNEL: "stable"
