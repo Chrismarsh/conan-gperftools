@@ -34,7 +34,7 @@ class GperfToolsConan(ConanFile):
          self.run("chmod +x ./%s/install-sh" % ("gperftools-%s" % self.version))
 
     def build(self):
-        with tools.chdir("gperftools-2.7"):
+        with tools.chdir("gperftools-%s" % self.version):
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure( 
                                  args = [ "" if self.options.cpuprof or self.options.heapprof or self.options.heapchecker else "--enable-minimal",
@@ -54,7 +54,7 @@ class GperfToolsConan(ConanFile):
 
 
     def package(self):
-        with tools.chdir("gperftools-2.7"):
+        with tools.chdir("gperftools-%s" % self.version):
             env_build = AutoToolsBuildEnvironment(self)
             env_build.install()
 
