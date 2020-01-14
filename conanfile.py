@@ -30,7 +30,7 @@ class GperfToolsConan(ConanFile):
          download( "https://github.com/gperftools/gperftools/releases/download/gperftools-%s/%s" %(self.version,zip_name),zip_name)
          unzip(zip_name)
 
-         tools.replace_in_file("%s/configure", r"-install_name \$rpath/", "-install_name @rpath/"  % ("gperftools-%s" % self.version))
+         tools.replace_in_file("%s/configure" % ("gperftools-%s" % self.version), r"-install_name \$rpath/", "-install_name @rpath/" )
          self.run("chmod +x ./%s/configure" % ("gperftools-%s" % self.version))
          self.run("chmod +x ./%s/install-sh" % ("gperftools-%s" % self.version))
 
