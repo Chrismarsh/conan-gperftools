@@ -43,7 +43,7 @@ class GperfToolsConan(ConanFile):
                                          "--enable-static" if not self.options.shared else "-disable-static",
                                          "--enable-cpu-profiler" if self.options.cpuprof else "--disable-cpu-profiler",
                                          "--enable-heap-profiler" if self.options.heapprof else "--disable-heap-profiler",
-                                         "enable-heap-checker" if self.options.heapchecker else "--disable-heap-checker" ])
+                                         "--enable-heap-checker" if self.options.heapchecker else "--disable-heap-checker" ])
             env_build.make()
     
 
