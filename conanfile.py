@@ -40,7 +40,7 @@ class GperfToolsConan(ConanFile):
             env_build.configure( 
                                  args = [ "" if self.options.cpuprof or self.options.heapprof or self.options.heapchecker else "--enable-minimal",
                                          "--enable-shared" if self.options.shared else "--disable-shared",
-                                         "--enable-static" if not self.options.shared else "-disable-static",
+                                         "--enable-static" if not self.options.shared else "--disable-static",
                                          "--enable-cpu-profiler" if self.options.cpuprof else "--disable-cpu-profiler",
                                          "--enable-heap-profiler" if self.options.heapprof else "--disable-heap-profiler",
                                          "--enable-heap-checker" if self.options.heapchecker else "--disable-heap-checker" ])
@@ -59,13 +59,6 @@ class GperfToolsConan(ConanFile):
             env_build = AutoToolsBuildEnvironment(self)
             env_build.install()
 
-        # self.copy(pattern="*", dst="include", src="include")
-
-        # self.copy(pattern="*.so", dst="lib", src=out_lib_dir, keep_path=False, symlinks=True)
-        # self.copy(pattern="*.so.*", dst="lib", src=out_lib_dir, keep_path=False, symlinks=True)
-        # self.copy(pattern="*.dylib*", dst="lib", src=out_lib_dir, keep_path=False)
-        # self.copy(pattern="*.lib", dst="lib", src=out_lib_dir, keep_path=False)
-        # self.copy(pattern="*.dll", dst="bin", src=out_lib_dir, keep_path=False)
 
 
 
