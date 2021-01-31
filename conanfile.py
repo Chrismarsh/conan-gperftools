@@ -5,7 +5,6 @@ from conans.tools import download, unzip
 class GperfToolsConan(ConanFile):
     name = "gperftools"
     description = "The fastest malloc we have seen."
-    version = "2.7"
     options = { "shared":[True, False], 
                 "cpuprof":[True, False], 
                 "heapprof":[True, False], 
@@ -15,6 +14,9 @@ class GperfToolsConan(ConanFile):
     url = "https://github.com/gperftools/gperftools"
     license = "https://github.com/gperftools/gperftools/blob/master/COPYING"
     settings = "os", "arch", "compiler", "build_type"
+
+    _source_folder = 'gperftools'
+
     def requirements(self):
 
         if self.settings.os == 'Macos':
@@ -25,17 +27,15 @@ class GperfToolsConan(ConanFile):
             self.requires("libunwind/1.3.1@bincrafters/stable")
 
     def source(self):
-         zip_name = "gperftools-%s.zip" % self.version 
+         tools.get(**self.conan_data["sources"][self.version])
+         os.rename("gperftools-{}".format(self.version), 'gperftools')
 
-         download( "https://github.com/gperftools/gperftools/releases/download/gperftools-%s/%s" %(self.version,zip_name),zip_name)
-         unzip(zip_name)
-
-         tools.replace_in_file("%s/configure" % ("gperftools-%s" % self.version), r"-install_name \$rpath/", "-install_name @rpath/" )
-         self.run("chmod +x ./%s/configure" % ("gperftools-%s" % self.version))
-         self.run("chmod +x ./%s/install-sh" % ("gperftools-%s" % self.version))
+         tools.replace_in_file("%s/configure" % (self._source_folder), r"-install_name \$rpath/", "-install_name @rpath/" )
+         self.run("chmod +x ./%s/configure" % (self._source_folder))
+         self.run("chmod +x ./%s/install-sh" % (self._source_folder))
 
     def build(self):
-        with tools.chdir("gperftools-%s" % self.version):
+        with tools.chdir(self._source_folder):
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure( 
                                  args = [ "" if self.options.cpuprof or self.options.heapprof or self.options.heapchecker else "--enable-minimal",
@@ -55,7 +55,7 @@ class GperfToolsConan(ConanFile):
 
 
     def package(self):
-        with tools.chdir("gperftools-%s" % self.version):
+        with tools.chdir(self._source_folder):
             env_build = AutoToolsBuildEnvironment(self)
             env_build.install()
 
