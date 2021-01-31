@@ -5,8 +5,8 @@ class SnappyTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
 
-    def configure(self):
-        self.options["gperftools"].heapprof = True
+    # def configure(self):
+        # self.options["gperftools"].heapprof = True
 
     def build(self):
         cmake = CMake(self)

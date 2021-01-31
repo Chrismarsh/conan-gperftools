@@ -5,12 +5,19 @@ import os
 class GperfToolsConan(ConanFile):
     name = "gperftools"
     description = "The fastest malloc we have seen."
-    options = { "shared":[True, False], 
+
+    options = { 
+                "shared":[True, False], 
                 "cpuprof":[True, False], 
                 "heapprof":[True, False], 
                 "heapchecker":[True, False]
                 }
-    default_options = "shared=True", "cpuprof=False", "heapprof=False", "heapchecker=False"
+    default_options = {
+                 "shared":True,
+                 "cpuprof":False,
+                 "heapprof":False,
+                 "heapchecker":=False
+                 }
     url = "https://github.com/gperftools/gperftools"
     license = "https://github.com/gperftools/gperftools/blob/master/COPYING"
     settings = "os", "arch", "compiler", "build_type"
@@ -24,7 +31,7 @@ class GperfToolsConan(ConanFile):
             print("!!!!!    libunwind is not supported on MacOS, disabling all associated functionality.    !!!!!")
 
         if self.options.cpuprof or self.options.heapprof or self.options.heapchecker:
-            self.requires("libunwind/1.3.1@bincrafters/stable")
+            self.requires("libunwind/[>=1.3]@bincrafters/stable")
 
     def source(self):
          tools.get(**self.conan_data["sources"][self.version])
