@@ -16,7 +16,7 @@ class GperfToolsConan(ConanFile):
                  "shared":True,
                  "cpuprof":False,
                  "heapprof":False,
-                 "heapchecker":=False
+                 "heapchecker":False
                  }
     url = "https://github.com/gperftools/gperftools"
     license = "https://github.com/gperftools/gperftools/blob/master/COPYING"
